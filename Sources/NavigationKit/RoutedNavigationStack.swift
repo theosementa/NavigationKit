@@ -48,6 +48,25 @@ public struct RoutedNavigationStack<Content: View, Destination: RoutedDestinatio
                         .body(route: .modalFitContent)
                         .fittedPresentationDetent()
                 }
+                .sheet(item: $router.presentedModalAppleLike, onDismiss: router.dismissAction) { destination in
+                    if #available(iOS 17.0, *) {
+                        destination
+                            .body(route: .modalAppleLike)
+                            .fittedPresentationDetent()
+                            .presentationBackground {
+                                UnevenRoundedRectangle(
+                                    topLeadingRadius: UIScreen.main.displayCornerRadius / 1.5,
+                                    bottomLeadingRadius: UIScreen.main.displayCornerRadius,
+                                    bottomTrailingRadius: UIScreen.main.displayCornerRadius,
+                                    topTrailingRadius: UIScreen.main.displayCornerRadius / 1.5
+                                )
+                                .fill(Color.white)
+                                .padding(3)
+                            }
+                    } else {
+                        // Fallback on earlier versions
+                    }
+                }
         }
     }
 }

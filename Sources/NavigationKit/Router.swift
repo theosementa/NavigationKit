@@ -15,6 +15,9 @@ open class Router<Destination>: ObservableObject {
     @Published var presentedModal: Destination?
     @Published var presentedModalFitContent: Destination?
     @Published var presentedModalCanFullScreen: Destination?
+    
+    @Published var presentedModalAppleLike: Destination?
+    
     @Published var isPresented: Binding<Destination?>
     @Published var dismissAction: (() -> Void)?
 
@@ -58,6 +61,11 @@ public extension Router {
     
     func presentModalFitContent(_ destination: Destination, _ dismissAction: (() -> Void)? = nil) {
         presentedModalFitContent = destination
+        self.dismissAction = dismissAction
+    }
+    
+    func presentModalAppleLike(_ destination: Destination, _ dismissAction: (() -> Void)? = nil) {
+        presentedModalAppleLike = destination
         self.dismissAction = dismissAction
     }
 }
