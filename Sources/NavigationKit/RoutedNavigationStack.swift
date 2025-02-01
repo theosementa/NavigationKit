@@ -60,7 +60,7 @@ public struct RoutedNavigationStack<Content: View, Destination: RoutedDestinatio
                                     bottomTrailingRadius: UIScreen.main.displayCornerRadius,
                                     topTrailingRadius: UIScreen.main.displayCornerRadius / 1.5
                                 )
-                                .fill(Color.white)
+                                .fill(Color(uiColor: .systemBackground))
                                 .padding(3)
                             }
                     } else {
