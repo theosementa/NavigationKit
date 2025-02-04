@@ -19,7 +19,8 @@ open class Router<Destination>: ObservableObject {
     @Published var presentedModalAppleLike: Destination?
     
     @Published var dismissAction: (() -> Void)?
-
+    
+    public init() {}
 }
 
 public extension Router {
