@@ -18,16 +18,8 @@ open class Router<Destination>: ObservableObject {
     
     @Published var presentedModalAppleLike: Destination?
     
-    @Published var isPresented: Binding<Destination?>
     @Published var dismissAction: (() -> Void)?
 
-    public var isPresenting: Bool {
-        presentedSheet != nil || presentedFullScreen != nil
-    }
-
-    public init(isPresented: Binding<Destination?>) {
-        self.isPresented = isPresented
-    }
 }
 
 public extension Router {
