@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct NavigationButton<Label: View>: View {
+public struct NavigationButton<Label: View>: View {
     private let action: () -> Void
     private let label: () -> Label
 
@@ -16,7 +16,7 @@ struct NavigationButton<Label: View>: View {
         self.label = label
     }
 
-    var body: some View {
+    public var body: some View {
         Button(action: action, label: label)
     }
 }
