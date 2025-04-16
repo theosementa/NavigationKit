@@ -5,11 +5,10 @@
 //  Created by Theo Sementa on 01/02/2025.
 //
 
-
 import Foundation
 import SwiftUI
 
-public struct RoutedNavigationStack<Content: View, Destination: RoutedDestination & Identifiable & Hashable>: View {
+public struct RoutedNavigationStack<Content: View, Destination: AppDestinationProtocol & Identifiable & Hashable>: View {
     @ObservedObject var router: Router<Destination>
     private let content: () -> Content
 
@@ -68,5 +67,6 @@ public struct RoutedNavigationStack<Content: View, Destination: RoutedDestinatio
                     }
                 }
         }
+        .environmentObject(router)
     }
 }

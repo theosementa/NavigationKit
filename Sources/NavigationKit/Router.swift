@@ -5,7 +5,6 @@
 //  Created by Theo Sementa on 01/02/2025.
 //
 
-
 import SwiftUI
 
 open class Router<Destination>: ObservableObject {
@@ -15,7 +14,6 @@ open class Router<Destination>: ObservableObject {
     @Published var presentedModal: Destination?
     @Published var presentedModalFitContent: Destination?
     @Published var presentedModalCanFullScreen: Destination?
-    
     @Published var presentedModalAppleLike: Destination?
     
     @Published var dismissAction: (() -> Void)?
@@ -24,41 +22,46 @@ open class Router<Destination>: ObservableObject {
 }
 
 public extension Router {
-    func navigateToRoot() {
+    
+    func popToRoot() {
         navigationPath.removeAll()
     }
-
-    func navigateTo(_ destination: Destination) {
+    
+    func pop() {
+        navigationPath.removeLast()
+    }
+    
+    func push(_ destination: Destination) {
         navigationPath.append(destination)
     }
-
-    func presentSheet(_ destination: Destination, _ dismissAction: (() -> Void)? = nil) {
-        presentedSheet = destination
-        self.dismissAction = dismissAction
+    
+    func push(_ destinations: [Destination]) {
+        navigationPath.append(contentsOf: destinations)
     }
 
-    func presentFullScreen(_ destination: Destination, _ dismissAction: (() -> Void)? = nil) {
-        presentedFullScreen = destination
-        self.dismissAction = dismissAction
-    }
+}
 
-    func presentModal(_ destination: Destination, _ dismissAction: (() -> Void)? = nil) {
-        presentedModal = destination
-        self.dismissAction = dismissAction
-    }
-
-    func presentModalCanFullScreen(_ destination: Destination, _ dismissAction: (() -> Void)? = nil) {
-        presentedModalCanFullScreen = destination
+public extension Router {
+    
+    func present(route: Route, _ destination: Destination, _ dismissAction: (() -> Void)? = nil) {
+        switch route {
+        case .push:
+            break
+        case .sheet:
+            self.presentedSheet = destination
+        case .fullScreenCover:
+            self.presentedFullScreen = destination
+        case .modal:
+            self.presentedModal = destination
+        case .modalCanFullScreen:
+            self.presentedModalCanFullScreen = destination
+        case .modalFitContent:
+            self.presentedModalFitContent = destination
+        case .modalAppleLike:
+            self.presentedModalAppleLike = destination
+        }
+        
         self.dismissAction = dismissAction
     }
     
-    func presentModalFitContent(_ destination: Destination, _ dismissAction: (() -> Void)? = nil) {
-        presentedModalFitContent = destination
-        self.dismissAction = dismissAction
-    }
-    
-    func presentModalAppleLike(_ destination: Destination, _ dismissAction: (() -> Void)? = nil) {
-        presentedModalAppleLike = destination
-        self.dismissAction = dismissAction
-    }
 }

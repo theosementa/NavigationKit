@@ -7,46 +7,34 @@
 
 import SwiftUI
 
-public struct NavigationButton<Label: View>: View {
-    private let action: () -> Void
+public struct NavigationButton<Destination: AppDestinationProtocol, Label: View>: View {
+    private let route: Route
+    private let destination: Destination
     private let label: () -> Label
+    private let dismissAction: (() -> Void)?
+    
+    @EnvironmentObject private var router: Router<Destination>
 
-    private init(action: @escaping () -> Void, @ViewBuilder label: @escaping () -> Label) {
-        self.action = action
+    public init(
+        route: Route,
+        destination: Destination,
+        dismissAction: (() -> Void)? = nil,
+        @ViewBuilder label: @escaping () -> Label
+    ) {
+        self.route = route
+        self.destination = destination
+        self.dismissAction = dismissAction
         self.label = label
     }
-
+    
     public var body: some View {
-        Button(action: action, label: label)
+        Button(action: {
+            switch route {
+            case .push:
+                router.push(destination)
+            case .sheet, .fullScreenCover, .modal, .modalCanFullScreen, .modalFitContent, .modalAppleLike:
+                router.present(route: route, destination, dismissAction)
+            }
+        }, label: label)
     }
-}
-
-// MARK: - Push
-extension NavigationButton {
-    
-    public init(
-        push: @escaping @autoclosure () -> Void,
-        action: (() -> Void)? = nil,
-        @ViewBuilder label: @escaping () -> Label) {
-            self.init(action: {
-                action?()
-                push()
-            }, label: label)
-        }
-    
-}
-
-// MARK: - Present
-extension NavigationButton {
-    
-    public init(
-        present: @escaping @autoclosure () -> Void,
-        action: (() -> Void)? = nil,
-        @ViewBuilder label: @escaping () -> Label) {
-            self.init(action: {
-                action?()
-                present()
-            }, label: label)
-        }
-    
 }
