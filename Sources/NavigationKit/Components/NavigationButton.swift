@@ -9,32 +9,52 @@ import SwiftUI
 
 public struct NavigationButton<Destination: AppDestinationProtocol, Label: View>: View {
     private let route: Route
-    private let destination: Destination
+    private let destinations: [Destination]
     private let label: () -> Label
-    private let dismissAction: (() -> Void)?
+    private let onDismiss: (() -> Void)?
     
     @EnvironmentObject private var router: Router<Destination>
-
-    public init(
-        route: Route,
-        destination: Destination,
-        dismissAction: (() -> Void)? = nil,
-        @ViewBuilder label: @escaping () -> Label
-    ) {
-        self.route = route
-        self.destination = destination
-        self.dismissAction = dismissAction
-        self.label = label
-    }
     
     public var body: some View {
         Button(action: {
             switch route {
             case .push:
-                router.push(destination)
+                router.push(destinations)
             case .sheet, .fullScreenCover, .modal, .modalCanFullScreen, .modalFitContent, .modalAppleLike:
-                router.present(route: route, destination, dismissAction)
+                if let firstDestination = destinations.first {
+                    router.present(route: route, firstDestination, onDismiss)
+                }
             }
         }, label: label)
     }
+}
+
+extension NavigationButton {
+    
+    public init(
+        route: Route,
+        destination: Destination,
+        onDismiss: (() -> Void)? = nil,
+        @ViewBuilder label: @escaping () -> Label
+    ) {
+        self.route = route
+        self.destinations = Array(arrayLiteral: destination)
+        self.onDismiss = onDismiss
+        self.label = label
+    }
+    
+    /// This init can only be used with route == .push
+    public init(
+        route: Route,
+        destinations: [Destination],
+        onDismiss: (() -> Void)? = nil,
+        @ViewBuilder label: @escaping () -> Label
+    ) {
+        precondition(route == .push, "This init can only be used with route == .push")
+        self.route = route
+        self.destinations = destinations
+        self.onDismiss = onDismiss
+        self.label = label
+    }
+    
 }

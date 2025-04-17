@@ -44,6 +44,11 @@ public extension Router {
 public extension Router {
     
     func present(route: Route, _ destination: Destination, _ dismissAction: (() -> Void)? = nil) {
+        guard route.isPresentable else {
+            print("Push route is not supported in this presentation method")
+            return
+        }
+        
         switch route {
         case .push:
             break
@@ -62,6 +67,53 @@ public extension Router {
         }
         
         self.dismissAction = dismissAction
+    }
+    
+    func dismiss() {
+        if isPagePresented { pop() }
+        if isSheetPresented { presentedSheet = nil }
+        if isFullScreenPresented { presentedFullScreen = nil }
+        if isModalPresented { presentedModal = nil }
+        if isModalFitContentPresented { presentedModalFitContent = nil }
+        if isModalCanFullScreenPresented { presentedModalCanFullScreen = nil }
+        if isModalAppleLikePresented { presentedModalAppleLike = nil }
+    }
+    
+}
+
+public extension Router {
+    
+    var isPagePresented: Bool {
+        return !isSheetPresented
+        && !isFullScreenPresented
+        && !isModalPresented
+        && !isModalFitContentPresented
+        && !isModalCanFullScreenPresented
+        && !isModalAppleLikePresented
+    }
+    
+    var isSheetPresented: Bool {
+        return presentedSheet != nil
+    }
+    
+    var isFullScreenPresented: Bool {
+        return presentedFullScreen != nil
+    }
+    
+    var isModalPresented: Bool {
+        return presentedModal != nil
+    }
+    
+    var isModalFitContentPresented: Bool {
+        return presentedModalFitContent != nil
+    }
+    
+    var isModalCanFullScreenPresented: Bool {
+        return presentedModalCanFullScreen != nil
+    }
+    
+    var isModalAppleLikePresented: Bool {
+        return presentedModalAppleLike != nil
     }
     
 }

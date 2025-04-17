@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public struct RoutedNavigationStack<Content: View, Destination: AppDestinationProtocol & Identifiable & Hashable>: View {
+public struct RoutedNavigationStack<Content: View, Destination: AppDestinationProtocol>: View {
     @ObservedObject var router: Router<Destination>
     private let content: () -> Content
 
@@ -51,6 +51,7 @@ public struct RoutedNavigationStack<Content: View, Destination: AppDestinationPr
                     if #available(iOS 17.0, *) {
                         destination
                             .body(route: .modalAppleLike)
+                            .padding()
                             .fittedPresentationDetent()
                             .presentationBackground {
                                 UnevenRoundedRectangle(
