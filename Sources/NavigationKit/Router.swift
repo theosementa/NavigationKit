@@ -83,6 +83,10 @@ public extension Router {
 
 public extension Router {
     
+    var isNavigationInProgress: Bool {
+        return !navigationPath.isEmpty
+    }
+    
     var isPagePresented: Bool {
         return !isSheetPresented
         && !isFullScreenPresented
