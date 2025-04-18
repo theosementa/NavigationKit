@@ -11,6 +11,7 @@ public struct NavigationButton<Destination: AppDestinationProtocol, Label: View>
     private let route: Route
     private let destinations: [Destination]
     private let label: () -> Label
+    private let onNavigate: (() -> Void)?
     private let onDismiss: (() -> Void)?
     
     @EnvironmentObject private var router: Router<Destination>
@@ -25,6 +26,8 @@ public struct NavigationButton<Destination: AppDestinationProtocol, Label: View>
                     router.present(route: route, firstDestination, onDismiss)
                 }
             }
+            
+            if let onNavigate { onNavigate() }
         }, label: label)
     }
 }
@@ -34,11 +37,13 @@ extension NavigationButton {
     public init(
         route: Route,
         destination: Destination,
+        onNavigate: (() -> Void)? = nil,
         onDismiss: (() -> Void)? = nil,
         @ViewBuilder label: @escaping () -> Label
     ) {
         self.route = route
         self.destinations = Array(arrayLiteral: destination)
+        self.onNavigate = onNavigate
         self.onDismiss = onDismiss
         self.label = label
     }
@@ -47,12 +52,14 @@ extension NavigationButton {
     public init(
         route: Route,
         destinations: [Destination],
+        onNavigate: (() -> Void)? = nil,
         onDismiss: (() -> Void)? = nil,
         @ViewBuilder label: @escaping () -> Label
     ) {
         precondition(route == .push, "This init can only be used with route == .push")
         self.route = route
         self.destinations = destinations
+        self.onNavigate = onNavigate
         self.onDismiss = onDismiss
         self.label = label
     }
