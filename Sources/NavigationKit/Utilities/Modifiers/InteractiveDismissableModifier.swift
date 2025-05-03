@@ -15,12 +15,15 @@ private struct InteractiveDismissableView<T: View>: UIViewControllerRepresentabl
     let onAttemptToDismiss: (() -> Void)?
   
     func makeUIViewController(context: Context) -> UIHostingController<T> {
-        UIHostingController(rootView: view)
+        let controller = UIHostingController(rootView: view)
+        controller.view.backgroundColor = .clear
+        return controller
     }
   
     func updateUIViewController(_ uiViewController: UIHostingController<T>, context: Context) {
         context.coordinator.dismissableView = self
         uiViewController.rootView = view
+        uiViewController.view.backgroundColor = .clear
         uiViewController.parent?.presentationController?.delegate = context.coordinator
     }
   
