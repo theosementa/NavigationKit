@@ -9,7 +9,7 @@ import SwiftUICore
 
 struct SheetPreviewableViewModifier: ViewModifier {
     func body(content: Content) -> some View {
-        EmptyView()
+        Text("")
             .sheet(isPresented: .constant(true)) {
                 content
             }
