@@ -78,8 +78,7 @@ public struct NavigationStackView<
                 }
                 .sheet(item: $router.presentedModalAppleLike, onDismiss: router.dismissAction) { destination in
                     if #available(iOS 17.0, *) {
-                        destination
-                            .body(route: .modalAppleLike)
+                        destinationContent(destination)
                             .padding()
                             .fittedPresentationDetent()
                             .presentationBackground {

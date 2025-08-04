@@ -30,6 +30,8 @@ public class Router<AppDestination>: ObservableObject {
 
     /// The currently presented modal that can become full screen.
     @Published public var presentedModalCanFullScreen: AppDestination?
+    
+    @Published public var presentedModalAppleLike: AppDestination?
 
     /// The dismiss action to call when dismissing a presentation.
     @Published public var dismissAction: (() -> Void)?
@@ -86,6 +88,8 @@ public extension Router {
             self.presentedModalCanFullScreen = destination
         case .modalFitContent:
             self.presentedModalFitContent = destination
+        case .modalAppleLike:
+            self.presentedModalAppleLike = destination
         }
 
         self.dismissAction = dismissAction
@@ -99,6 +103,7 @@ public extension Router {
         if isModalPresented { presentedModal = nil }
         if isModalFitContentPresented { presentedModalFitContent = nil }
         if isModalCanFullScreenPresented { presentedModalCanFullScreen = nil }
+        if isModalAppleLikePresented { presentedModalAppleLike = nil }
     }
 }
 
@@ -110,6 +115,7 @@ public extension Router {
         && !isModalPresented
         && !isModalFitContentPresented
         && !isModalCanFullScreenPresented
+        && !isModalAppleLikePresented
     }
 
     /// Returns true if a sheet is currently presented.
@@ -135,5 +141,9 @@ public extension Router {
     /// Returns true if a modal that can become fullscreen is currently presented.
     var isModalCanFullScreenPresented: Bool {
         return presentedModalCanFullScreen != nil
+    }
+    
+    var isModalAppleLikePresented: Bool {
+        return presentedModalAppleLike != nil
     }
 }

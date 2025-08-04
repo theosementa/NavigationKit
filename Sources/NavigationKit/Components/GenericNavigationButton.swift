@@ -40,7 +40,7 @@ public struct GenericNavigationButton<Destination: AppDestinationProtocol, Label
             switch route {
             case .push:
                 router.push(destinations)
-            case .sheet, .fullScreenCover, .modal, .modalCanFullScreen, .modalFitContent:
+            case .sheet, .fullScreenCover, .modal, .modalCanFullScreen, .modalFitContent, .modalAppleLike:
                 if let firstDestination = destinations.first {
                     router.present(route: route, firstDestination, onDismiss)
                 }
