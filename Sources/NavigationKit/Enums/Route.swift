@@ -1,14 +1,13 @@
 //
 //  Route.swift
-//  NavigationKit
+//  NavigationModule
 //
-//  Created by Theo Sementa on 01/02/2025.
+//  Created by Theo Sementa on 24/06/2025.
 //
 
 import Foundation
 
 /// Enumeration of all type of navigation available
-
 public enum Route {
     case push
     case sheet
@@ -26,4 +25,3 @@ extension Route {
         self != .push
     }
 }
-
