@@ -5,7 +5,7 @@
 //  Created by Theo Sementa on 02/07/2025.
 //
 
-import SwiftUICore
+import SwiftUI
 
 struct SheetPreviewableViewModifier: ViewModifier {
     func body(content: Content) -> some View {
