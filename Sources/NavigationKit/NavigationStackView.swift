@@ -58,9 +58,9 @@ public struct NavigationStackView<
         NavigationStack(path: $router.navigationPath) {
             initialContent()
                 .navigationDestination(for: Destination.self) { destination in
-                    if #available(iOS 18.0, *) {
+                    if #available(iOS 18.0, *), router.isZoomedTransition {
                         destinationContent(destination)
-                            .navigationTransition(.zoom(sourceID: destination.id, in: router.namespace))
+                            .navigationTransition(.zoom(sourceID: destination.hashValue, in: router.namespace))
                     } else {
                         destinationContent(destination)
                     }

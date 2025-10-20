@@ -38,6 +38,8 @@ public class Router<AppDestination>: ObservableObject {
     @Published public var dismissAction: (() -> Void)?
     
     @Published public var namespace: Namespace.ID
+    
+    @Published public var isZoomedTransition: Bool = false
 
     /// Creates a new instance of `Router`.
     public init() {

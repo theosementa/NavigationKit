@@ -31,16 +31,18 @@ public struct GenericNavigationButton<Destination: AppDestinationProtocol, Label
     
     /// An optional action to call when the button is tapped, before navigation occurs.
     private let onNavigate: (() -> Void)?
+    
+    let withZoomTransition: Bool
 
     /// The router used to manage navigation, injected via the environment.
     @EnvironmentObject private var router: Router<Destination>
 
     /// The content and behavior of the button.
-    ///
     /// When tapped, the button triggers a `push` or a presentation depending on the route.
     public var body: some View {
         Button {
             if let onNavigate { onNavigate() }
+            router.isZoomedTransition = withZoomTransition
             
             switch route {
             case .push:
@@ -51,9 +53,12 @@ public struct GenericNavigationButton<Destination: AppDestinationProtocol, Label
                 }
             }
         } label: {
-            if #available(iOS 18.0, *), destinations.count == 1, let firstDestination = destinations.first {
+            if #available(iOS 18.0, *),
+               router.isZoomedTransition,
+               destinations.count == 1,
+               let firstDestination = destinations.first {
                 label()
-                    .matchedTransitionSource(id: firstDestination.id, in: router.namespace)
+                    .matchedTransitionSource(id: firstDestination.hashValue, in: router.namespace)
             } else {
                 label()
             }
@@ -76,12 +81,14 @@ extension GenericNavigationButton {
         destination: Destination,
         onDismiss: (() -> Void)? = nil,
         onNavigate: (() -> Void)? = nil,
+        withZoomTransition: Bool = false,
         @ViewBuilder label: @escaping () -> Label
     ) {
         self.route = route
         self.destinations = Array(arrayLiteral: destination)
         self.onDismiss = onDismiss
         self.onNavigate = onNavigate
+        self.withZoomTransition = withZoomTransition
         self.label = label
     }
 
@@ -107,6 +114,7 @@ extension GenericNavigationButton {
         self.destinations = destinations
         self.onDismiss = onDismiss
         self.onNavigate = onNavigate
+        self.withZoomTransition = false
         self.label = label
     }
 }

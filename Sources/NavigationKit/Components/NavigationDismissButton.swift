@@ -15,18 +15,22 @@ import SwiftUI
 /// - Parameter Label: The view used as the button's content.
 public struct NavigationDismissButton<Label: View>: View {
     
+    private let dismissAction: (() -> Void)?
+    
     /// A closure that returns the content of the button.
     private let label: () -> Label
     
     /// The environment-provided dismiss action from SwiftUI.
     @Environment(\.dismiss) private var dismiss
-    
+        
     /// Creates a new dismiss button with a custom label.
     ///
     /// - Parameter label: A view builder that provides the button label.
     public init(
+        dismissAction: (() -> Void)?,
         @ViewBuilder label: @escaping () -> Label
     ) {
+        self.dismissAction = dismissAction
         self.label = label
     }
     
@@ -34,6 +38,15 @@ public struct NavigationDismissButton<Label: View>: View {
     ///
     /// When tapped, the button dismisses the current view using the SwiftUI `dismiss()` environment action.
     public var body: some View {
-        Button(action: { dismiss() }, label: label)
+        Button(
+            action: {
+                if let dismissAction {
+                    dismissAction()
+                } else {
+                    dismiss()
+                }
+            },
+            label: label
+        )
     }
 }
