@@ -37,10 +37,13 @@ public class Router<AppDestination>: ObservableObject {
     /// The dismiss action to call when dismissing a presentation.
     @Published public var dismissAction: (() -> Void)?
     
-    @Namespace public var namespace
+    @Published public var namespace: Namespace.ID
 
     /// Creates a new instance of `Router`.
-    public init() {}
+    public init() {
+        let placeholder = Namespace().wrappedValue
+        self.namespace = placeholder
+    }
 }
 
 public extension Router {

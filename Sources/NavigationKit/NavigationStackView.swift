@@ -30,6 +30,8 @@ public struct NavigationStackView<
 
     /// A closure that generates a view for a given destination.
     private let destinationContent: (_ destination: Destination) -> DestinationContent
+    
+    @Namespace private var realNamespace
 
     /// Creates a new instance of `NavigationStackView`.
     ///
@@ -102,5 +104,10 @@ public struct NavigationStackView<
                 }
         }
         .environmentObject(router)
+        .onAppear {
+            if router.namespace != realNamespace {
+                self.router.namespace = realNamespace
+            }
+        }
     }
 }

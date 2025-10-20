@@ -39,7 +39,7 @@ public struct GenericNavigationButton<Destination: AppDestinationProtocol, Label
     ///
     /// When tapped, the button triggers a `push` or a presentation depending on the route.
     public var body: some View {
-        Button(action: {
+        Button {
             if let onNavigate { onNavigate() }
             
             switch route {
@@ -50,7 +50,14 @@ public struct GenericNavigationButton<Destination: AppDestinationProtocol, Label
                     router.present(route: route, firstDestination, onDismiss)
                 }
             }
-        }, label: label)
+        } label: {
+            if #available(iOS 18.0, *), destinations.count == 1, let firstDestination = destinations.first {
+                label()
+                    .matchedTransitionSource(id: firstDestination.id, in: router.namespace)
+            } else {
+                label()
+            }
+        }
     }
 }
 
