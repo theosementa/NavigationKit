@@ -56,7 +56,12 @@ public struct NavigationStackView<
         NavigationStack(path: $router.navigationPath) {
             initialContent()
                 .navigationDestination(for: Destination.self) { destination in
-                    destinationContent(destination)
+                    if #available(iOS 18.0, *) {
+                        destinationContent(destination)
+                            .navigationTransition(.zoom(sourceID: destination.id, in: router.namespace))
+                    } else {
+                        destinationContent(destination)
+                    }
                 }
                 .sheet(item: $router.presentedSheet, onDismiss: router.dismissAction) { destination in
                     destinationContent(destination)

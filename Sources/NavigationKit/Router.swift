@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 /// A generic router for managing navigation and presentation within a SwiftUI app.
 ///
@@ -35,6 +36,8 @@ public class Router<AppDestination>: ObservableObject {
 
     /// The dismiss action to call when dismissing a presentation.
     @Published public var dismissAction: (() -> Void)?
+    
+    @Namespace public var namespace
 
     /// Creates a new instance of `Router`.
     public init() {}
