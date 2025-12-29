@@ -28,6 +28,9 @@ public struct GenericNavigationButton<Destination: AppDestinationProtocol, Label
 
     /// An optional action to call when the view is dismissed.
     private let onDismiss: (() -> Void)?
+    
+    /// An optional action to call when the button is tapped, before navigation occurs.
+    private let onNavigate: (() -> Void)?
 
     /// The router used to manage navigation, injected via the environment.
     @EnvironmentObject private var router: Router<Destination>
@@ -37,6 +40,8 @@ public struct GenericNavigationButton<Destination: AppDestinationProtocol, Label
     /// When tapped, the button triggers a `push` or a presentation depending on the route.
     public var body: some View {
         Button(action: {
+            if let onNavigate { onNavigate() }
+            
             switch route {
             case .push:
                 router.push(destinations)
@@ -62,11 +67,13 @@ extension GenericNavigationButton {
         route: Route,
         destination: Destination,
         onDismiss: (() -> Void)? = nil,
+        onNavigate: (() -> Void)? = nil,
         @ViewBuilder label: @escaping () -> Label
     ) {
         self.route = route
         self.destinations = Array(arrayLiteral: destination)
         self.onDismiss = onDismiss
+        self.onNavigate = onNavigate
         self.label = label
     }
 
@@ -83,12 +90,14 @@ extension GenericNavigationButton {
         route: Route,
         destinations: [Destination],
         onDismiss: (() -> Void)? = nil,
+        onNavigate: (() -> Void)? = nil,
         @ViewBuilder label: @escaping () -> Label
     ) {
         precondition(route == .push, "This init can only be used with route == .push")
         self.route = route
         self.destinations = destinations
         self.onDismiss = onDismiss
+        self.onNavigate = onNavigate
         self.label = label
     }
 }
