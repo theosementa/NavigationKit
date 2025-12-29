@@ -7,7 +7,7 @@
 //  Wrapper Example
 
 import SwiftUI
-import NavigationKit
+import NavigationModule
 
 public struct NavigationButtonView<Label: View>: View {
 

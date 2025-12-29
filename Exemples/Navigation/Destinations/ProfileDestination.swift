@@ -6,7 +6,10 @@
 //
 
 import Foundation
+import NavigationModule
 
 public enum ProfileDestination: DestinationItem {
-    case profile(userId: String)
+    case list
+    case details(userId: String)
+    case fullName(userId: String)
 }

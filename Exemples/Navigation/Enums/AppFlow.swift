@@ -6,8 +6,10 @@
 //
 
 import Foundation
+import NavigationModule
 
-enum AppFlow: AppFlowProtocol, Int {
-    case cat
+enum AppFlow: Int, AppFlowProtocol {
+    case profileList
     case random
+    case profile
 }
