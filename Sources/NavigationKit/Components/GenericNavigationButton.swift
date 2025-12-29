@@ -28,41 +28,24 @@ public struct GenericNavigationButton<Destination: AppDestinationProtocol, Label
 
     /// An optional action to call when the view is dismissed.
     private let onDismiss: (() -> Void)?
-    
-    /// An optional action to call when the button is tapped, before navigation occurs.
-    private let onNavigate: (() -> Void)?
-    
-    let withZoomTransition: Bool
 
     /// The router used to manage navigation, injected via the environment.
     @EnvironmentObject private var router: Router<Destination>
 
     /// The content and behavior of the button.
+    ///
     /// When tapped, the button triggers a `push` or a presentation depending on the route.
     public var body: some View {
-        Button {
-            if let onNavigate { onNavigate() }
-            router.isZoomedTransition = withZoomTransition
-            
+        Button(action: {
             switch route {
             case .push:
                 router.push(destinations)
-            case .sheet, .fullScreenCover, .modal, .modalCanFullScreen, .modalFitContent, .modalAppleLike:
+            case .sheet, .fullScreenCover:
                 if let firstDestination = destinations.first {
                     router.present(route: route, firstDestination, onDismiss)
                 }
             }
-        } label: {
-            if #available(iOS 18.0, *),
-               router.isZoomedTransition,
-               destinations.count == 1,
-               let firstDestination = destinations.first {
-                label()
-                    .matchedTransitionSource(id: firstDestination.hashValue, in: router.namespace)
-            } else {
-                label()
-            }
-        }
+        }, label: label)
     }
 }
 
@@ -74,21 +57,16 @@ extension GenericNavigationButton {
     ///   - route: The type of route (e.g., `.push`, `.sheet`, `.modal`, etc.)
     ///   - destination: The destination to navigate or present.
     ///   - onDismiss: An optional action to call when the view is dismissed.
-    ///   - onNavigate: An optional action to call when the button is tapped, before navigation occurs.
     ///   - label: A view builder that returns the button label.
     public init(
         route: Route,
         destination: Destination,
         onDismiss: (() -> Void)? = nil,
-        onNavigate: (() -> Void)? = nil,
-        withZoomTransition: Bool = false,
         @ViewBuilder label: @escaping () -> Label
     ) {
         self.route = route
         self.destinations = Array(arrayLiteral: destination)
         self.onDismiss = onDismiss
-        self.onNavigate = onNavigate
-        self.withZoomTransition = withZoomTransition
         self.label = label
     }
 
@@ -100,21 +78,17 @@ extension GenericNavigationButton {
     ///   - route: Must be `.push`. Triggers navigation to a sequence of destinations.
     ///   - destinations: The destinations to push.
     ///   - onDismiss: Ignored for `.push` routes.
-    ///   - onNavigate: An optional action to call when the button is tapped, before navigation occurs.
     ///   - label: A view builder that returns the button label.
     public init(
         route: Route,
         destinations: [Destination],
         onDismiss: (() -> Void)? = nil,
-        onNavigate: (() -> Void)? = nil,
         @ViewBuilder label: @escaping () -> Label
     ) {
         precondition(route == .push, "This init can only be used with route == .push")
         self.route = route
         self.destinations = destinations
         self.onDismiss = onDismiss
-        self.onNavigate = onNavigate
-        self.withZoomTransition = false
         self.label = label
     }
 }

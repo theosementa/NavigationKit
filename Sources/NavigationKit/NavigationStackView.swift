@@ -18,20 +18,28 @@ import SwiftUI
 ///   - DestinationContent: The type of view to render for a given `Destination`.
 public struct NavigationStackView<
     InitialContent: View,
+    Flow: AppFlowProtocol,
     Destination: AppDestinationProtocol,
     DestinationContent: View
 >: View {
 
     /// The router managing the navigation path and presentation state.
     @ObservedObject private var router: Router<Destination>
+    
+    /// The central manager responsible for coordinating flows and registering routers.
+    @ObservedObject private var routerManager: RouterManager<Flow, Destination>
+    
+    /// The unique identifier for the application flow represented by this stack.
+    private let flow: Flow
+    
+    /// A Boolean value indicating whether this stack represents a persistent tab page.
+    private let isTabPage: Bool
 
     /// The initial content view displayed at the root of the stack.
     private let initialContent: () -> InitialContent
 
     /// A closure that generates a view for a given destination.
     private let destinationContent: (_ destination: Destination) -> DestinationContent
-    
-    @Namespace private var realNamespace
 
     /// Creates a new instance of `NavigationStackView`.
     ///
@@ -41,10 +49,16 @@ public struct NavigationStackView<
     ///   - initialContent: A closure that returns the initial root view of the navigation stack.
     public init(
         router: Router<Destination>,
+        routerManager: RouterManager<Flow, Destination>,
+        flow: Flow,
+        isTabPage: Bool = true,
         destinationContent: @escaping (_ destination: Destination) -> DestinationContent,
         initialContent: @escaping () -> InitialContent
     ) {
         self.router = router
+        self.routerManager = routerManager
+        self.flow = flow
+        self.isTabPage = isTabPage
         self.destinationContent = destinationContent
         self.initialContent = initialContent
     }
@@ -58,55 +72,56 @@ public struct NavigationStackView<
         NavigationStack(path: $router.navigationPath) {
             initialContent()
                 .navigationDestination(for: Destination.self) { destination in
-                    if #available(iOS 18.0, *), router.isZoomedTransition {
-                        destinationContent(destination)
-                            .navigationTransition(.zoom(sourceID: destination.hashValue, in: router.namespace))
-                    } else {
-                        destinationContent(destination)
-                    }
+                    destinationContent(destination)
                 }
                 .sheet(item: $router.presentedSheet, onDismiss: router.dismissAction) { destination in
-                    destinationContent(destination)
-                }
-                .sheet(item: $router.presentedModal, onDismiss: router.dismissAction) { destination in
-                    destinationContent(destination)
-                        .presentationDetents([.medium])
-                }
-                .sheet(item: $router.presentedModalCanFullScreen, onDismiss: router.dismissAction) { destination in
-                    destinationContent(destination)
-                        .presentationDetents([.medium, .large])
+                    switch router.selectedRoute {
+                    case .sheet(let style):
+                        switch style {
+                        case .medium:
+                            destinationContent(destination)
+                                .presentationDetents([.medium])
+                        case .large:
+                            destinationContent(destination)
+                        case .canFullScreen:
+                            destinationContent(destination)
+                                .presentationDetents([.medium, .large])
+                        case .fitContent:
+                            destinationContent(destination)
+                                .fittedPresentationDetent()
+                        case .airpodsLike:
+                            destinationContent(destination)
+                                .padding()
+                                .fittedPresentationDetent()
+                                .presentationBackground {
+                                    UnevenRoundedRectangle(
+                                        topLeadingRadius: UIScreen.main.displayCornerRadius / 1.5,
+                                        bottomLeadingRadius: UIScreen.main.displayCornerRadius,
+                                        bottomTrailingRadius: UIScreen.main.displayCornerRadius,
+                                        topTrailingRadius: UIScreen.main.displayCornerRadius / 1.5
+                                    )
+                                    .fill(Color(uiColor: .systemBackground))
+                                    .padding(3)
+                                }
+                        }
+                    default:
+                        EmptyView()
+                    }
                 }
                 .fullScreenCover(item: $router.presentedFullScreen, onDismiss: router.dismissAction) { destination in
                     destinationContent(destination)
                 }
-                .sheet(item: $router.presentedModalFitContent, onDismiss: router.dismissAction) { destination in
-                    destinationContent(destination)
-                        .fittedPresentationDetent()
-                }
-                .sheet(item: $router.presentedModalAppleLike, onDismiss: router.dismissAction) { destination in
-                    if #available(iOS 17.0, *) {
-                        destinationContent(destination)
-                            .padding()
-                            .fittedPresentationDetent()
-                            .presentationBackground {
-                                UnevenRoundedRectangle(
-                                    topLeadingRadius: UIScreen.main.displayCornerRadius / 1.5,
-                                    bottomLeadingRadius: UIScreen.main.displayCornerRadius,
-                                    bottomTrailingRadius: UIScreen.main.displayCornerRadius,
-                                    topTrailingRadius: UIScreen.main.displayCornerRadius / 1.5
-                                )
-                                .fill(Color(uiColor: .systemBackground))
-                                .padding(3)
-                            }
-                    } else {
-                        // Fallback on earlier versions
-                    }
-                }
         }
+        .tag(flow)
         .environmentObject(router)
         .onAppear {
-            if router.namespace != realNamespace {
-                self.router.namespace = realNamespace
+            routerManager.register(router: router, for: flow)
+            routerManager.setCurrentFlow(flow)
+        }
+        .onDisappear {
+            if isTabPage == false {
+                routerManager.setPreviousFlow()
+                routerManager.unregister(for: flow)
             }
         }
     }

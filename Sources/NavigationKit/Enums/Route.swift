@@ -7,17 +7,19 @@
 
 import Foundation
 
+public enum SheetStyle: Equatable {
+    case medium
+    case large
+    case canFullScreen
+    case fitContent
+    case airpodsLike
+}
+
 /// Enumeration of all type of navigation available
-public enum Route {
+public enum Route: Equatable {
     case push
-    case sheet
+    case sheet(style: SheetStyle)
     case fullScreenCover
-    case modal
-    case modalCanFullScreen
-    case modalFitContent
-    
-    @available(iOS 17.0, *)
-    case modalAppleLike
 }
 
 extension Route {
