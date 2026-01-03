@@ -14,10 +14,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "NavigationKit",
-            swiftSettings: [
-                .defaultIsolation(MainActor.self)
-            ]
+            name: "NavigationKit"
         )
     ]
 )
