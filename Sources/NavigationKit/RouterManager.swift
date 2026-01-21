@@ -14,6 +14,7 @@ import Foundation
 ///
 /// Usage implies injecting this object into the environment or passing it to the root view (like a `TabView`)
 /// to control switching between major application sections.
+@MainActor
 open class RouterManager<Flow: AppFlowProtocol, Destination: AppDestinationProtocol>: ObservableObject {
     
     /// The currently active application flow.

@@ -19,8 +19,7 @@ import SwiftUI
 public struct NavigationStackView<
     InitialContent: View,
     Flow: AppFlowProtocol,
-    Destination: AppDestinationProtocol,
-    DestinationContent: View
+    Destination: AppDestinationProtocol
 >: View {
 
     /// The router managing the navigation path and presentation state.
@@ -38,8 +37,8 @@ public struct NavigationStackView<
     /// The initial content view displayed at the root of the stack.
     private let initialContent: () -> InitialContent
 
-    /// A closure that generates a view for a given destination.
-    private let destinationContent: (_ destination: Destination) -> DestinationContent
+    /// Resolve view for a given destination.
+    private let registery: NavigationRegistry = .shared
 
     /// Creates a new instance of `NavigationStackView`.
     ///
@@ -52,14 +51,12 @@ public struct NavigationStackView<
         routerManager: RouterManager<Flow, Destination>,
         flow: Flow,
         isTabPage: Bool = true,
-        destinationContent: @escaping (_ destination: Destination) -> DestinationContent,
         initialContent: @escaping () -> InitialContent
     ) {
         self.router = router
         self.routerManager = routerManager
         self.flow = flow
         self.isTabPage = isTabPage
-        self.destinationContent = destinationContent
         self.initialContent = initialContent
     }
 
@@ -72,25 +69,25 @@ public struct NavigationStackView<
         NavigationStack(path: $router.navigationPath) {
             initialContent()
                 .navigationDestination(for: Destination.self) { destination in
-                    destinationContent(destination)
+                    registery.resolve(destination)
                 }
                 .sheet(item: $router.presentedSheet, onDismiss: router.dismissAction) { destination in
                     switch router.selectedRoute {
                     case .sheet(let style):
                         switch style {
                         case .medium:
-                            destinationContent(destination)
+                            registery.resolve(destination)
                                 .presentationDetents([.medium])
                         case .large:
-                            destinationContent(destination)
+                            registery.resolve(destination)
                         case .canFullScreen:
-                            destinationContent(destination)
+                            registery.resolve(destination)
                                 .presentationDetents([.medium, .large])
                         case .fitContent:
-                            destinationContent(destination)
+                            registery.resolve(destination)
                                 .fittedPresentationDetent()
                         case .airpodsLike:
-                            destinationContent(destination)
+                            registery.resolve(destination)
                                 .padding()
                                 .fittedPresentationDetent()
                                 .presentationBackground {
@@ -109,7 +106,7 @@ public struct NavigationStackView<
                     }
                 }
                 .fullScreenCover(item: $router.presentedFullScreen, onDismiss: router.dismissAction) { destination in
-                    destinationContent(destination)
+                    registery.resolve(destination)
                 }
         }
         .tag(flow)
