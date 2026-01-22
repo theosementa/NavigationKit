@@ -14,17 +14,17 @@ import Foundation
 ///
 /// Usage implies injecting this object into the environment or passing it to the root view (like a `TabView`)
 /// to control switching between major application sections.
-@MainActor
-open class RouterManager<Flow: AppFlowProtocol, Destination: AppDestinationProtocol>: ObservableObject {
+@MainActor @Observable
+open class RouterManager<Flow: AppFlowProtocol, Destination: AppDestinationProtocol> {
     
     /// The currently active application flow.
-    @Published public var selectedFlow: Flow
+    public var selectedFlow: Flow
     
     /// The previously active flow, if any.
-    @Published public var previousFlow: Flow?
+    public var previousFlow: Flow?
     
     /// A dictionary storing the active router instance for each registered flow.
-    @Published private var routers: [Flow: Router<Destination>] = [:]
+    private var routers: [Flow: Router<Destination>] = [:]
     
     public init(
         selectedFlow: Flow,

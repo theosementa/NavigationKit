@@ -11,22 +11,23 @@ import Foundation
 ///
 /// `Router` tracks navigation paths as well as various presentation styles like sheets, modals, and full screen covers.
 /// - Note: `AppDestination` must conform to `AppDestinationProtocol` and typically represents navigation targets in your app.
-public class Router<AppDestination>: ObservableObject {
+@Observable
+public class Router<AppDestination> {
 
     /// The current stack of destinations in the navigation path.
-    @Published public var navigationPath: [AppDestination] = []
+    public var navigationPath: [AppDestination] = []
 
     /// The currently presented sheet destination.
-    @Published public var presentedSheet: AppDestination?
+    public var presentedSheet: AppDestination?
     
     /// The currently presented route for the presented destination.
-    @Published public var selectedRoute: Route?
+    public var selectedRoute: Route?
 
     /// The currently presented full screen cover destination.
-    @Published public var presentedFullScreen: AppDestination?
+    public var presentedFullScreen: AppDestination?
 
     /// The dismiss action to call when dismissing a presentation.
-    @Published public var dismissAction: (() -> Void)?
+    public var dismissAction: (() -> Void)?
 
     /// Creates a new instance of `Router`.
     public init() {}

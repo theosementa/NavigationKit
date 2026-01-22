@@ -23,10 +23,10 @@ public struct NavigationStackView<
 >: View {
 
     /// The router managing the navigation path and presentation state.
-    @ObservedObject private var router: Router<Destination>
+    @Bindable private var router: Router<Destination>
     
     /// The central manager responsible for coordinating flows and registering routers.
-    @ObservedObject private var routerManager: RouterManager<Flow, Destination>
+    @Bindable private var routerManager: RouterManager<Flow, Destination>
     
     /// The unique identifier for the application flow represented by this stack.
     private let flow: Flow
@@ -110,7 +110,7 @@ public struct NavigationStackView<
                 }
         }
         .tag(flow)
-        .environmentObject(router)
+        .environment(router)
         .onAppear {
             routerManager.register(router: router, for: flow)
             routerManager.setCurrentFlow(flow)

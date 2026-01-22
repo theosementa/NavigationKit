@@ -33,7 +33,7 @@ public struct GenericNavigationButton<Destination: AppDestinationProtocol, Label
     private let onNavigate: (() -> Void)?
 
     /// The router used to manage navigation, injected via the environment.
-    @EnvironmentObject private var router: Router<Destination>
+    @Environment(Router<Destination>.self) private var router
 
     /// The content and behavior of the button.
     ///
